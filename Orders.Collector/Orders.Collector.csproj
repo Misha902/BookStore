@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Core" Version="9.3.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\OrdersModule\Orders.Application.Contracts\Orders.Application.Contracts.csproj" />
+    <ProjectReference Include="..\src\OrdersModule\Orders.Application\Orders.Application.csproj" />
+    <ProjectReference Include="..\src\OrdersModule\Orders.Domain.Shared\Orders.Domain.Shared.csproj" />
+    <ProjectReference Include="..\src\OrdersModule\Orders.Domain\Orders.Domain.csproj" />
+    <ProjectReference Include="..\src\OrdersModule\Orders.EntityFrameworkCore\Orders.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\src\OrdersModule\Orders.HttpApi\Orders.HttpApi.csproj" />
+  </ItemGroup>
+
+</Project>

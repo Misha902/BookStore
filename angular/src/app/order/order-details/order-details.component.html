@@ -1,0 +1,113 @@
+<div class="container">
+    <h5 class="mt-4">
+        Order Details №{{ order?.id || 'New' }}
+        <span class="badge ms-2" [ngClass]="{
+        'bg-warning': order?.status === 0,
+        'bg-success': order?.status === 1,
+        'bg-danger': order?.status === 2
+      }">
+            {{ order?.status | orderStatus }}
+        </span>
+    </h5>
+
+
+    <div class="d-flex justify-content-end gap-2 mb-3" *ngIf="!isReadOnly">
+        <button class="btn btn-danger" (click)="onCancel()">Cancel</button>
+        <button class="btn btn-primary" (click)="onSave()">Save</button>
+        <button class="btn btn-success" (click)="onComplete()">Complete</button>
+    </div>
+
+    <form [formGroup]="orderForm" class="pt-3">
+        <div class="form-group mb-2">
+            <label for="address">Address</label>
+            <input id="address" type="text" class="form-control" formControlName="address" [readonly]="isReadOnly" />
+            <div *ngIf="orderForm.get('address')?.invalid && orderForm.get('address')?.touched"
+                class="text-danger small">
+                Address is required
+            </div>
+        </div>
+    </form>
+
+    <h5 class="mt-4">Order Items</h5>
+    <div class="border rounded p-3">
+
+        <div class="d-flex justify-content-end mb-2" *ngIf="!isReadOnly">
+            <button type="button" class="btn btn-outline-primary" (click)="openItemModal()">Add Item</button>
+        </div>
+
+        <form [formGroup]="orderForm">
+            <div formArrayName="items">
+                <table class="table table-sm table-striped" *ngIf="itemsFormArray.controls.length; else noItems">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Author</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                            <th *ngIf="!isReadOnly"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let itemGroup of itemsFormArray.controls; let i = index" [formGroupName]="i">
+                            <td>{{ getBookName(itemGroup.value.bookId) }}</td>
+                            <td>{{ itemGroup.value.authorName }}</td>
+                            <td>{{ itemGroup.value.quantity }}</td>
+                            <td>{{ itemGroup.value.totalPrice | currency:'USD' }}</td>
+                            <td *ngIf="!isReadOnly">
+                                <button type="button" class="btn btn-sm btn-outline-primary me-1"
+                                    (click)="editItem(i)">Edit</button>
+                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                    (click)="removeItem(i)">Remove</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+
+        <ng-template #noItems>
+            <p class="text-muted mb-0">No items added yet.</p>
+        </ng-template>
+    </div>
+</div>
+
+
+<abp-modal [(visible)]="isModalOpen" *ngIf="!isReadOnly">
+    <ng-template #abpHeader>
+        <h3>Order Items</h3>
+    </ng-template>
+
+    <ng-template #abpBody>
+        <form [formGroup]="itemForm">
+            <div class="form-group mb-2">
+                <label>Book</label>
+                <select class="form-control" formControlName="bookId" (change)="onBookSelected($event)">
+                    <option [ngValue]="null">Select a book</option>
+                    <option *ngFor="let book of books" [ngValue]="book.id">{{ book.name }}</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-2">
+                <label>Author</label>
+                <input class="form-control" formControlName="authorName" readonly />
+            </div>
+
+            <div class="form-group mb-2">
+                <label>Quantity</label>
+                <input type="number" class="form-control" formControlName="quantity" />
+            </div>
+
+            <div class="form-group mb-2">
+                <label>Total Price</label>
+                <input class="form-control" formControlName="totalPrice" readonly />
+            </div>
+        </form>
+    </ng-template>
+
+    <ng-template #abpFooter>
+        <button class="btn btn-secondary" (click)="cancelItem()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveItem()" [disabled]="itemForm.invalid">
+            Save
+        </button>
+    </ng-template>
+</abp-modal>
